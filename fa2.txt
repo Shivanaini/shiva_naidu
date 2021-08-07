@@ -1,0 +1,211 @@
+///////////////////////////////////////////////////////////////application.properties in github///////////////////////////
+
+spring.datasource.driverClassName=com.mysql.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+
+
+////////////////////////////////////////////////add these dependencies in ConfigServer pom.xml/////////////////////////////
+
+<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>Greenwich.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+</dependencyManagement>
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-config-server</artifactId>
+</dependency>
+
+
+/////////////////////////////////////////////////////////////configServer application.properties//////////////////////////
+
+server.port=1111
+spring.application.name=ConfigServer
+#If InfyGit is using
+spring.cloud.config.server.git.uri=https:(add the githhub url)
+
+
+///////////////////////////////////////////////////////////////Add this annotation in configserver/////////////////////////
+@EnableConfigServer 
+
+
+///////////////////////////////////////////////////////////////Add these dependencies in all microservices////////////
+
+
+<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>Greenwich.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+</dependencyManagement>
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+</dependency>
+
+
+///////////////////////////////////////////////////////////create a bootstrap file and add these properties//////////////////
+
+spring.cloud.config.uri=http://localhost:1111
+spring.datasource.username=root
+#spring.datasource.password=root
+
+
+
+==========Eurekaa=============
+Add these dependencies in pom.xml of eurekha
+
+<dependency>
+    <groupId>org.javassist</groupId>
+    <artifactId>javassist</artifactId>
+    <version>3.25.0-GA</version>
+</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+<dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.3.1</version>
+</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/javax.activation/activation -->
+<dependency>
+    <groupId>javax.activation</groupId>
+    <artifactId>activation</artifactId>
+    <version>1.1</version>
+</dependency>
+	
+=====================================================================
+
+Application.properties in eureka
+
+
+spring.application.name=Eureka1
+server.port=5555
+eureka.client.fetch-registry=false
+eureka.client.register-with-eureka=false
+eureka.client.service-url.defaultZone=http://localhost:5555/eureka
+
+=======================================================================
+
+Add @EnableEurekaServer annotation in eureka
+
+
+=======================================================================
+Add these dependencies in microservices pom.xml
+
+
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+</dependency>
+=======================================================================
+
+Add @EnableDiscoveryClient in all microservices 
+
+=========================================================================
+Add this line in application.properties of github
+
+eureka.client.service-url.defaultZone=http://localhost:5555/eureka
+==========================================================================
+
+
+
+
+################# Hystrix ######################
+
+add these dependencies in customer pom.xml
+
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+</dependency>
+#####################################################################################
+
+add this command
+
+@HystrixCommand(fallbackMethod="getCustomerProfileFallback")
+
+
+
+public CustomerDTO getCustomerProfileFallback( Long phoneNo) {
+		return new CustomerDTO();
+	}
+
+########################################################################################
+add these properties
+
+hystrix.command.default.circuitBreaker.requestVolumeThreshold=4
+hystrix.command.default.metrics.rollingStats.timeInMilliseconds=10000
+hystrix.command.default.circuitBreaker.errorThresholdPercentage=50
+hystrix.command.default.circuitBreaker.sleepWindowInMilliseconds=10000
+########################################################################################
+
+ZUUL
+
+Add these dependencies in zuul :
+
+        <dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+		</dependency>
+
+
+
+
+Add these annotations:
+
+@EnableZuulProxy
+@EnableDiscoveryClient
+	
+Add these in application.properties:
+
+
+server.port=3333
+spring.application.name=ZuulServer
+
+zuul.routes.customer.path=/customers/*
+zuul.routes.customer.strip-prefix=false
+zuul.routes.customer.service-id=customer(service id name must be as git application name)
+
+zuul.routes.friendfamily.path=/customers/*/friends
+zuul.routes.friendfamily.strip-prefix=false
+zuul.routes.friendfamily.service-id=friendfamily
+
+zuul.routes.calldetails.path=/customers/*/calldetails
+zuul.routes.calldetails.strip-prefix=false
+zuul.routes.calldetails.service-id=calldetails
+
+zuul.routes.plan.path=/plans/**
+zuul.routes.plan.strip-prefix=false
+zuul.routes.plan.service-id=plan
+eureka.client.service-url.defaultZone=http://localhost:5555/eureka
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
