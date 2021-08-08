@@ -195,6 +195,12 @@ eureka.client.service-url.defaultZone=http://localhost:5555/eureka
 
 
 
+///////////////////////////////////////instaces creation/////////////////////////////////////
+server.port=S{PORT:${SERVER_PORT:0}}
+
+eureka.instance.instance-id=${spring.cloud.client.hostname}:$${spring.cloud.client.hostname}${spring.application.instance_id:${random.value}}
+
+
 
 
 
