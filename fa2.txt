@@ -100,11 +100,11 @@ eureka.client.service-url.defaultZone=http://localhost:5555/eureka
 
 =======================================================================
 
-Add @EnableEurekaServer annotation in eureka
+Add @EnableEurekaServer annotation in eureka main class
 
 
 =======================================================================
-Add these dependencies in microservices pom.xml
+Add these dependencies in all microservices pom.xml
 
 
 <dependency>
@@ -137,15 +137,24 @@ add these dependencies in customer pom.xml
 add this command
 
 @HystrixCommand(fallbackMethod="getCustomerProfileFallback")
-
+System.out.println("================ In Profile ================"+phoneNo);
 
 
 public CustomerDTO getCustomerProfileFallback( Long phoneNo) {
+System.out.println("================ Fall Back ================"+phoneNo);
 		return new CustomerDTO();
 	}
 
+Dependant Micro Services  (Optional)
+
+In FriendFamily Controller Class
+
+if(phoneNo==9009009001L)
+{
+   throw new RuntimeException();
+}
 ########################################################################################
-add these properties
+add these properties in customer application file
 
 hystrix.command.default.circuitBreaker.requestVolumeThreshold=4
 hystrix.command.default.metrics.rollingStats.timeInMilliseconds=10000
@@ -155,9 +164,9 @@ hystrix.command.default.circuitBreaker.sleepWindowInMilliseconds=10000
 
 ZUUL
 
-Add these dependencies in zuul :
+Add these dependencies in zuul Pom.XML File:
 
-        <dependency>
+                <dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
 		</dependency>
@@ -165,12 +174,12 @@ Add these dependencies in zuul :
 
 
 
-Add these annotations:
+Add these annotations In Zuul Main Method:
 
 @EnableZuulProxy
 @EnableDiscoveryClient
 	
-Add these in application.properties:
+Add these in Zuul application.properties:
 
 
 server.port=3333
@@ -182,23 +191,34 @@ zuul.routes.customer.service-id=customer(service id name must be as git applicat
 
 zuul.routes.friendfamily.path=/customers/*/friends
 zuul.routes.friendfamily.strip-prefix=false
-zuul.routes.friendfamily.service-id=friendfamily
+zuul.routes.friendfamily.service-id=friendfamily (service id name must be as git application name)
 
 zuul.routes.calldetails.path=/customers/*/calldetails
 zuul.routes.calldetails.strip-prefix=false
-zuul.routes.calldetails.service-id=calldetails
+zuul.routes.calldetails.service-id=calldetails (service id name must be as git application name)
 
 zuul.routes.plan.path=/plans/**
 zuul.routes.plan.strip-prefix=false
-zuul.routes.plan.service-id=plan
+zuul.routes.plan.service-id=plan (service id name must be as git application name)
 eureka.client.service-url.defaultZone=http://localhost:5555/eureka
 
 
 
 ///////////////////////////////////////instaces creation/////////////////////////////////////
-server.port=${PORT:${SERVER_PORT:0}}
+server.port=S{PORT:${SERVER_PORT:0}}
 
 eureka.instance.instance-id=${spring.cloud.client.hostname}:$${spring.cloud.client.hostname}${spring.application.instance_id:${random.value}}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
